@@ -1,61 +1,100 @@
-#include <iostream>
-#include <vector>
-#include <algorithm> // Para usar std::swap
+#include <iostream>     // Incluye la biblioteca estándar para entrada/salida (cout, cin)
+#include <vector>       // Incluye la biblioteca para el uso del contenedor vector
+#include <algorithm>    // Incluye algoritmos estándar, como std::swap
+#include <limits>       // Incluye herramientas para manejar los límites numéricos
 
-using namespace std;
+using namespace std;    // Utiliza el espacio de nombres estándar para evitar el uso de "std::" repetidamente
 
-// Función para imprimir el contenido del vector en la consola
+/**
+ * @brief Imprime los elementos de un vector de enteros en la consola.
+ *
+ * @param v El vector de enteros a imprimir.
+ *        Se pasa por referencia constante para evitar copias innecesarias.
+ *
+ * @pre El vector puede estar vacío o contener cualquier número de elementos.
+ *
+ * @complexity Tiempo: O(n), donde n es el tamaño del vector.
+ *             Espacio: O(1), ya que no se utiliza almacenamiento adicional significativo.
+ */
 void imprimirVector(const vector<int>& v) {
-    for (size_t i = 0; i < v.size(); i++) {
-        cout << v[i] << " "; // Imprimir cada elemento separado por un espacio
+    for (int i : v) {  // Bucle que recorre cada elemento del vector
+        cout << i << " ";  // Imprime el elemento seguido de un espacio
     }
-    cout << endl; // Nueva línea al final
+    cout << endl;  // Imprime un salto de línea al final para mayor claridad
 }
 
-// Función de ordenamiento por selección
-void ordenamientoSeleccion(vector<int>& v) {
-    int n = v.size(); // Obtener el tamaño del vector
+/**
+ * @brief Ordena un vector de enteros en orden ascendente utilizando el algoritmo de selección.
+ *
+ * @param v El vector de enteros a ordenar. Se pasa por referencia para modificarlo directamente.
+ *
+ * @pre El vector puede contener números repetidos o negativos.
+ *
+ * @complexity Tiempo: O(n^2), donde n es el tamaño del vector, ya que hay dos bucles anidados.
+ *             Espacio: O(1), ya que el ordenamiento se realiza en el propio vector (ordenamiento in situ).
+ */
+void ordenarSeleccion(vector<int>& v) {
+    for (size_t i = 0; i < v.size(); i++) {  // Recorre cada posición del vector
+        size_t minIndex = i;  // Asume que el elemento actual es el mínimo
 
-    // Recorrer cada posición del vector
-    for (int i = 0; i < n; i++) {
-        int minIndex = i; // Asumir que el índice mínimo es el actual
-
-        // Buscar el índice del valor mínimo en el resto del vector
-        for (int j = i + 1; j < n; j++) {
-            if (v[j] < v[minIndex]) { // Comparar elementos
-                minIndex = j; // Actualizar el índice mínimo si se encuentra uno menor
+        for (size_t j = i + 1; j < v.size(); j++) {  // Recorre los elementos restantes
+            if (v[j] < v[minIndex]) {  // Encuentra el índice del elemento mínimo
+                minIndex = j;  // Actualiza el índice mínimo
             }
         }
 
-        // Intercambiar el valor mínimo encontrado con el valor en la posición actual
+        // Intercambia el elemento actual con el mínimo encontrado
         swap(v[i], v[minIndex]);
 
-        // Imprimir el vector después de cada intercambio
+        // Imprime el estado actual del vector después de cada intercambio
         imprimirVector(v);
     }
 }
 
 int main() {
-    int n;
+    try {
+        int sizeVector;  // Declaración de una variable entera para almacenar el tamaño de un vector
+        cin.exceptions(ios::failbit);  // Configura cin para que lance una excepción si ocurre un error de entrada
 
-    // Solicitar el número de elementos al usuario
-    cout << "Enter the number of elements: ";
-    cin >> n;
+        do {
+            cout << "Enter size of vector: ";  // Muestra un mensaje para que el usuario ingrese el tamaño del vector
+            cin >> sizeVector;  // Lee el tamaño ingresado por el usuario
 
-    vector<int> v(n); // Crear un vector de tamaño n
+            if (sizeVector <= 0) {  // Verifica si el tamaño ingresado es inválido (número no positivo)
+                cout << "Invalid input. Try again." << endl;  // Informa al usuario sobre el error
+                continue;
+            }
 
-    // Solicitar los elementos del vector
-    for (int i = 0; i < n; i++) {
-        cout << "Enter element " << i + 1 << ": ";
-        cin >> v[i]; // Leer cada elemento ingresado por el usuario
+            vector<int> vector(sizeVector);  // Declara el vector de tamaño indicado
+
+            // Ingreso de elementos con manejo de errores
+            for (int i = 0; i < sizeVector; i++) {
+                cout << "Enter element at position " << i + 1 << ": ";
+                while (!(cin >> vector[i])) {  // Verifica si la entrada es válida
+                    cout << "Invalid input. Please enter an integer: ";
+                    cin.clear();  // Limpia el estado de error
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Descartar entrada incorrecta
+                }
+            }
+
+            cout << "\nVector before sorting: ";
+            imprimirVector(vector);
+
+            // Ordenamiento por selección
+            cout << "\nSorting process:\n";
+            ordenarSeleccion(vector);
+
+            cout << "\nSorted vector: ";
+            imprimirVector(vector);
+
+        } while (sizeVector <= 0);  // Repite el bucle mientras el tamaño sea inválido
+
+    } catch (const ios_base::failure& e) {  // Captura excepciones de fallo en la entrada
+        cout << "Error: " << e.what() << endl;  // Muestra el mensaje de error proporcionado por la excepción
+
+        cin.clear();  // Limpia el estado de error de cin para permitir nuevas entradas
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Descartar caracteres no deseados en el búfer
     }
 
-    // Llamar a la función de ordenamiento por selección
-    ordenamientoSeleccion(v);
-
-    // Mensaje final con el vector ordenado
-    cout << "Sorted elements: ";
-    imprimirVector(v);
-
-    return 0;
+    return 0;  // Finaliza el programa correctamente
 }
