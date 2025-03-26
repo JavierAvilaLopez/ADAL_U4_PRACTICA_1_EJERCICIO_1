@@ -68,7 +68,7 @@ int main() {
             vector<int> vector(sizeVector);  // Declara el vector de tamaño indicado
 
             // Ingreso de elementos con manejo de errores
-            for (int i = 0; i < sizeVector; i++) {
+            for (int& i : vector) {
                 cout << "Enter element at position " << i + 1 << ": ";
                 while (!(cin >> vector[i])) {  // Verifica si la entrada es válida
                     cout << "Invalid input. Please enter an integer: ";
